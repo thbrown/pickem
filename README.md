@@ -16,14 +16,14 @@
 
 # fetch.js
 
-Pull pick distribution data from (https://football.fantasysports.yahoo.com/pickem/pickdistribution)
-Pull win probabilities from (https://levy-edge.statsinsider.com.au)
+- Pull pick distribution data from (https://football.fantasysports.yahoo.com/pickem/pickdistribution)
+- Pull win probabilities from (https://levy-edge.statsinsider.com.au)
 
 # crunch-p.js
 
-For every different combination of pick'em picks for a given week ( 2 ^ [num games] combinations):
-Simulate outcome where participant picks are drawn the Yahoo pick distribution and wins are drawn from win probabilities
-Keep and report the best combination.
+- For every different combination of pick'em picks for a given week ( 2 ^ [num games] combinations):
+- Simulate outcome where participant picks are drawn the Yahoo pick distribution and wins are drawn from win probabilities
+- Keep and report the best combination.
 
 # To run
 
