@@ -1,85 +1,80 @@
+const fs = require("fs");
+const matchData = JSON.parse(fs.readFileSync("match-projections.json", "utf8"));
+
 // Okay here is some code for football pickem stuff
 const opponentCount = 18;
-const iterations = 10000;
+const iterations = 1000;
 
 const myStartingWins = 0;
-//const opponentStartingWins = new Array(opponentCount).fill(0);
-const opponentStartingWins = [
-  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0,
-];
+const opponentStartingWins = new Array(opponentCount).fill(0);
+
+//const opponentStartingWins = [
+//  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0,
+//];
 
 const mustWinOutright = false;
 
-const inputPicks = [
-  "Washington 25% Philadelphia 75%",
-  "Green Bay 92% Chicago 8%",
-  "Jacksonville 1% Detroit 99%",
-  "Las Vegas 7% Miami 93%",
-  "LAR 84% New England 16%",
-  "Cleveland 21% New Orleans 79%",
-  "Baltimore 62% Pittsburgh 38%",
-  "Minnesota 97% Tennessee 3%",
-  "Atlanta 33% Denver 67%",
-  "Seattle 6% San Francisco 94%",
-  "Kansas City 34% Buffalo 66%",
-  "Cincinnati 35% LAC 65%",
-  "Indianapolis 44% NYJ 56%",
-  "Houston 94% Dallas 6%",
-];
-
-const inputWins = [
-  "RAMS 64%",
-  "PACKERS 63%",
-  "SAINTS 59%",
-  "STEELERS 52%",
-  "BRONCOS 53%",
-  "CHARGERS 61%",
-  "TEXANS 70%",
-  "DOLPHINS 73%",
-  "LIONS 81%",
-  "VIKINGS 70%",
-  "JETS 55%",
-  "49ERS 80%",
-  "BILLS 64%",
-];
-
-const teamMapping = {
-  Arizona: { abbreviation: "ARI", name: "Cardinals" },
-  Atlanta: { abbreviation: "ATL", name: "Falcons" },
-  Baltimore: { abbreviation: "BAL", name: "Ravens" },
-  Buffalo: { abbreviation: "BUF", name: "Bills" },
-  Carolina: { abbreviation: "CAR", name: "Panthers" },
-  Chicago: { abbreviation: "CHI", name: "Bears" },
-  Cincinnati: { abbreviation: "CIN", name: "Bengals" },
-  Cleveland: { abbreviation: "CLE", name: "Browns" },
-  Dallas: { abbreviation: "DAL", name: "Cowboys" },
-  Denver: { abbreviation: "DEN", name: "Broncos" },
-  Detroit: { abbreviation: "DET", name: "Lions" },
-  "Green Bay": { abbreviation: "GB", name: "Packers" },
-  Houston: { abbreviation: "HOU", name: "Texans" },
-  Indianapolis: { abbreviation: "IND", name: "Colts" },
-  Jacksonville: { abbreviation: "JAX", name: "Jaguars" },
-  "Kansas City": { abbreviation: "KC", name: "Chiefs" },
-  "Las Vegas": { abbreviation: "LV", name: "Raiders" },
-  LAC: { abbreviation: "LAC", name: "Chargers" },
-  LAR: { abbreviation: "LAR", name: "Rams" },
-  Miami: { abbreviation: "MIA", name: "Dolphins" },
-  Minnesota: { abbreviation: "MIN", name: "Vikings" },
-  "New England": { abbreviation: "NE", name: "Patriots" },
-  "New Orleans": { abbreviation: "NO", name: "Saints" },
-  NYG: { abbreviation: "NYG", name: "Giants" },
-  NYJ: { abbreviation: "NYJ", name: "Jets" },
-  Philadelphia: { abbreviation: "PHI", name: "Eagles" },
-  Pittsburgh: { abbreviation: "PIT", name: "Steelers" },
-  "San Francisco": { abbreviation: "SF", name: "49ers" },
-  Seattle: { abbreviation: "SEA", name: "Seahawks" },
-  "Tampa Bay": { abbreviation: "TB", name: "Buccaneers" },
-  Tennessee: { abbreviation: "TEN", name: "Titans" },
-  Washington: { abbreviation: "WAS", name: "Commanders" },
-};
-
-const data = convertData(inputPicks, inputWins);
+const data = convertData(matchData);
 console.log(data);
+
+function getNFLAbbreviation(teamName) {
+  const nflTeams = {
+    // AFC East
+    BILLS: "BUF",
+    DOLPHINS: "MIA",
+    PATRIOTS: "NE ",
+    JETS: "NYJ",
+
+    // AFC North
+    RAVENS: "BAL",
+    BENGALS: "CIN",
+    BROWNS: "CLE",
+    STEELERS: "PIT",
+
+    // AFC South
+    TEXANS: "HOU",
+    COLTS: "IND",
+    JAGUARS: "JAX",
+    TITANS: "TEN",
+
+    // AFC West
+    BRONCOS: "DEN",
+    CHIEFS: "KC ",
+    RAIDERS: "LV ",
+    CHARGERS: "LAC",
+
+    // NFC East
+    COWBOYS: "DAL",
+    GIANTS: "NYG",
+    EAGLES: "PHI",
+    COMMANDERS: "WAS",
+
+    // NFC North
+    BEARS: "CHI",
+    LIONS: "DET",
+    PACKERS: "GB ",
+    VIKINGS: "MIN",
+
+    // NFC South
+    FALCONS: "ATL",
+    PANTHERS: "CAR",
+    SAINTS: "NO ",
+    BUCCANEERS: "TB ",
+
+    // NFC West
+    CARDINALS: "ARI",
+    RAMS: "LAR",
+    NINERS: "SF ",
+    SEAHAWKS: "SEA",
+  };
+
+  const abbr = nflTeams[teamName.toUpperCase()];
+  if (abbr == null) {
+    throw new Error("Unknown team name " + teamName);
+  }
+
+  return abbr;
+}
 
 // For each combo
 let bestPicks = [];
@@ -174,7 +169,7 @@ for (let p = 0; p < possiblePicks; p++) {
   const winPercentage = myWins / iterations;
   console.log(
     "Pick set",
-    myPicks.map((v) => v.padStart(3, "_")).join("-"),
+    myPicks.map((v) => getNFLAbbreviation(v)).join("-"),
     "-",
     p,
     "of",
@@ -192,9 +187,13 @@ for (let p = 0; p < possiblePicks; p++) {
 
 console.log("Self wins", myStartingWins, "Opponent Wins", opponentStartingWins);
 console.log("Best picks", bestPicks, "win%", bestWinPercentage);
-console.log(["Matchup", "Winner", "H/A", "Win%", "Diff", "Value"].join("\t"));
+console.log(["Matchup ", "Pick   ", "H/A ", "Win%", "Diff", "Value"].join(" "));
 for (let i = 0; i < data.length; i++) {
-  const matchup = data[i].away + "@" + data[i].home + "\t";
+  const matchup =
+    getNFLAbbreviation(data[i].away) +
+    "@" +
+    getNFLAbbreviation(data[i].home) +
+    "\t";
   const pickedOdds = (
     bestPicks[i] === data[i].home
       ? data[i].homePickChance
@@ -221,13 +220,14 @@ for (let i = 0; i < data.length; i++) {
   const homeOrAway = bestPicks[i] === data[i].home ? "HOME" : "AWAY";
   let altered = bestPicks.slice();
   altered[i] = bestPicks[i] === data[i].home ? data[i].away : data[i].home;
+
   const value = (
     allResults[bestPicks.join("-")] - allResults[altered.join("-")]
   ).toFixed(2);
-  //console.log(bestPicks.join("-"), altered.join("-"));
+
   console.log(
     matchup,
-    bestPicks[i] + "\t",
+    getNFLAbbreviation(bestPicks[i]) + "\t",
     homeOrAway,
     correctOdds,
     diff,
@@ -235,42 +235,19 @@ for (let i = 0; i < data.length; i++) {
   );
 }
 
-function convertData(picks, wins) {
-  const teamWinChances = {};
-  wins.forEach((win) => {
-    const [team, percentage] = win.match(/([\w\s]+)\s(\d+)/).slice(1);
-    console.log(team, percentage);
-    const teamInfo = Object.values(teamMapping).find(
-      (info) => info.name.toUpperCase() === team.toUpperCase()
-    );
-    if (teamInfo) {
-      teamWinChances[teamInfo.abbreviation] = parseInt(percentage, 10) / 100;
-    }
-  });
-  console.log(teamWinChances);
-
-  return picks.map((pick) => {
-    console.log("PICK", picks, pick);
-    const [, awayCity, awayPick, homeCity, homePick] = pick.match(
-      /([a-zA-Z\s]+)\s(\d+)%\s([a-zA-Z\s]+)\s(\d+)%/
-    );
-    const homeInfo = Object.entries(teamMapping).find(
-      ([city, info]) => city.toUpperCase() === homeCity.toUpperCase()
-    )[1];
-    const awayInfo = Object.entries(teamMapping).find(
-      ([city, info]) => city.toUpperCase() === awayCity.toUpperCase()
-    )[1];
-
-    const homeWinChance =
-      teamWinChances[homeInfo.abbreviation] ||
-      1 - teamWinChances[awayInfo.abbreviation];
-    const homePickChance = parseInt(homePick, 10) / 100;
-
+function convertData(matchData) {
+  return matchData.map((match) => {
     return {
-      home: homeInfo.abbreviation,
-      away: awayInfo.abbreviation,
-      homeWinChance,
-      homePickChance,
+      home: match.homeTeam,
+      away: match.awayTeam,
+      homeWinChance:
+        match.homeTeam === match.favoriteTeam
+          ? match.favoriteProb
+          : 1 - match.favoriteProb,
+      homePickChance:
+        match.homeTeam === match.fanFavoriteTeam
+          ? match.fanFavoritePercent
+          : 1 - match.fanFavoritePercent,
     };
   });
 }
