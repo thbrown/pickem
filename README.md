@@ -27,4 +27,10 @@
 
 # To run
 
+requires nodejs and npm
+
+`cd ./auto`
+
+`npm install`
+
 `node ./auto/fetch.js && node ./auto/crunch-p.js`

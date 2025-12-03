@@ -3,10 +3,10 @@ const opponentCount = 18;
 const iterations = 10000;
 
 const myStartingWins = 0;
-//const opponentStartingWins = new Array(opponentCount).fill(0);
-const opponentStartingWins = [
-  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0,
-];
+const opponentStartingWins = new Array(opponentCount).fill(0);
+//const opponentStartingWins = [
+//  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0,
+//];
 
 const mustWinOutright = false;
 

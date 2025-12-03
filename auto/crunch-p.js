@@ -18,20 +18,25 @@ if (isMainThread) {
   const iterations = 30000;
   const myStartingWins = 0;
   const opponentStartingWins = new Array(opponentCount).fill(0);
-  const mustWinOutright = true;
+  //const opponentStartingWins = [3,2,2,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0];
 
-  // Compute parameters
-  const numWorkers = Math.min(os.cpus().length, possiblePicks) - 1;
+  const mustWinOutright = true;
 
   const data = convertData(matchData);
   console.log(data);
 
   const possiblePicks = Math.pow(2, data.length);
-  const picksPerWorker = Math.ceil(possiblePicks / numWorkers);
+
+  // Compute parameters
+  const freeCpuCount = Math.max(os.cpus().length - 1, 1);
+  const numWorkers = Math.min(freeCpuCount, possiblePicks);
 
   console.log(
     `Using ${numWorkers} workers to process ${possiblePicks} combinations`
   );
+
+  const picksPerWorker = Math.ceil(possiblePicks / numWorkers);
+
 
   let completedWorkers = 0;
   let bestPicks = [];
